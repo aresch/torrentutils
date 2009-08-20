@@ -45,12 +45,14 @@ def get_path_size(path):
 
     :param path: the path to check for size
     :type path: string
-    :returns: the size in bytes of the path or -1 if the path does not exist
+    :returns: the size in bytes of the path
     :rtype: int
+
+    :raises InvalidPath: if the path does not exist
 
     """
     if not os.path.exists(path):
-        return -1
+        raise InvalidPath("%s is an invalid path" % path)
 
     if os.path.isfile(path):
         return os.path.getsize(path)
@@ -155,6 +157,9 @@ class TorrentMetadata(object):
 
         # Calculate the number of pieces we will require for the data
         num_pieces = datasize / piece_size
+        if datasize % piece_size:
+            num_pieces += 1
+
         torrent["info"]["piece length"] = piece_size
 
         # Create the info
