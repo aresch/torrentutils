@@ -20,6 +20,8 @@
 # 	Boston, MA    02110-1301, USA.
 #
 
+from __future__ import division
+
 import sys
 from optparse import OptionParser
 
@@ -70,6 +72,10 @@ def torrent_make():
         "To specify more than one webseed just add as many -w options as necessary."
         )
     )
+    parser.add_option(
+        "-q", "--quiet", dest="quiet", action="store_true", default=False,
+        help="Do not print out progress or any status."
+    )
 
     # Get the options and args from the OptionParser
     (options, args) = parser.parse_args()
@@ -82,10 +88,19 @@ def torrent_make():
     md.data_path = args[0]
 
     for option, value in options.__dict__.items():
-        if value:
+        if value and hasattr(md, option):
             setattr(md, option, value)
 
-    md.save(args[1])
+    def progress(completed, num_pieces):
+        ratio = completed / num_pieces
+        cols = 60
+        blocks = int(round((cols - 2) * ratio))
+        sys.stdout.write("Percent: %.2f%% Pieces: %s/%s  [" % (ratio*100, completed, num_pieces)\
+         + "#" * blocks + "~" * (cols - 2 - blocks) + "]\r")
+        if completed == num_pieces:
+            print("\n")
+
+    md.save(args[1], None if options.quiet else progress)
 
 def torrent_view():
     pass
