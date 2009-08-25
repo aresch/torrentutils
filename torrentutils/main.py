@@ -40,7 +40,7 @@ def pretty_docstring(s):
     return s
 
 def torrent_make():
-    from .lib import maketorrent
+    from .lib import metadata
 
     usage = "%prog [options] source target"
 
