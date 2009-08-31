@@ -27,6 +27,8 @@ from optparse import OptionParser
 
 import pkg_resources
 
+from .lib import metadata
+
 version = pkg_resources.require("torrentutils")[0].version
 
 def pretty_docstring(s):
@@ -40,27 +42,25 @@ def pretty_docstring(s):
     return s
 
 def torrent_make():
-    from .lib import metadata
-
     usage = "%prog [options] source target"
 
     # Setup the argument parser
     parser = OptionParser(usage=usage, version="%prog (torrentutils) " + version)
     parser.add_option(
         "-s", "--piece-size", dest="piece_size", action="store", type="int",
-        help=pretty_docstring(maketorrent.TorrentMetadata.piece_size.__doc__)
+        help=pretty_docstring(metadata.TorrentMetadata.piece_size.__doc__)
     )
     parser.add_option(
         "-p", "--pad-files", dest="pad_files", action="store_true", default=False,
-        help=pretty_docstring(maketorrent.TorrentMetadata.pad_files.__doc__)
+        help=pretty_docstring(metadata.TorrentMetadata.pad_files.__doc__)
     )
     parser.add_option(
         "-c", "--comment", dest="comment", action="store", type="string",
-        help=pretty_docstring(maketorrent.TorrentMetadata.comment.__doc__)
+        help=pretty_docstring(metadata.TorrentMetadata.comment.__doc__)
     )
     parser.add_option(
         "-P", "--private", dest="private", action="store_true", default=False,
-        help=pretty_docstring(maketorrent.TorrentMetadata.private.__doc__)
+        help=pretty_docstring(metadata.TorrentMetadata.private.__doc__)
     )
     parser.add_option(
         "-t", "--tracker", dest="tracker", action="append", type="string",
@@ -68,7 +68,7 @@ def torrent_make():
     )
     parser.add_option(
         "-w", "--webseeds", dest="webseed", action="append", type="string",
-        help=pretty_docstring(maketorrent.TorrentMetadata.webseeds.__doc__ +\
+        help=pretty_docstring(metadata.TorrentMetadata.webseeds.__doc__ +\
         "To specify more than one webseed just add as many -w options as necessary."
         )
     )
@@ -84,7 +84,7 @@ def torrent_make():
         parser.print_help()
         sys.exit(0)
 
-    md = maketorrent.TorrentMetadata()
+    md = metadata.TorrentMetadata()
     md.data_path = args[0]
 
     for option, value in options.__dict__.items():
@@ -103,7 +103,31 @@ def torrent_make():
     md.save(args[1], None if options.quiet else progress)
 
 def torrent_view():
-    pass
+    usage = "%prog [options] source"
+
+    # Setup the argument parser
+    parser = OptionParser(usage=usage, version="%prog (torrentutils) " + version)
+
+     # Get the options and args from the OptionParser
+    (options, args) = parser.parse_args()
+
+    if len(args) < 1:
+        parser.print_help()
+        sys.exit(0)
+
+    for arg in args:
+        md = metadata.TorrentMetadata()
+        md.load(arg)
+        print("comment: %s" % md.comment)
+        print("private: %s" % md.private)
+        print("pad_files: %s" % md.pad_files)
+        print("trackers: %s" % md.trackers)
+        print("webseeds: %s" % md.webseeds)
+        print("peice_size: %s" % md.piece_size)
+        print("info-hash: %s" % md.info_hash)
+        print("name: %s" % md.name)
+        print("files: %s" % md.files)
+
 
 def torrent_edit():
     pass
