@@ -227,13 +227,18 @@ class TorrentMetadata(object):
 
         # Create the info
         if len(self.__files) > 1:
-            torrent["info"]["name"] = os.path.split(self.__files[0][0])[1]
+            torrent["info"]["name"] = os.path.basename(self.data_path)
             files = []
             padding_count = 0
             # Collect a list of file paths and add padding files if necessary
             for index, (path, size) in enumerate(self.__files):
-                p = path.replace(self.data_path, "")
-                p = path.lstrip("/")
+                head, tail = os.path.split(self.data_path)
+                if tail:
+                    p = path.replace(tail, "")
+                else:
+                    p = path.replace(head, "")
+
+                p = p.lstrip("/")
                 p = p.split("/")
                 files.append((size, p))
                 # Add a padding file if necessary
@@ -262,7 +267,7 @@ class TorrentMetadata(object):
                     buf = ""
                     fs[-1]["attr"] = "p"
                 else:
-                    fd = open(os.path.join(os.path.dirname(self.data_path), *path), "rb")
+                    fd = open(os.path.join(self.data_path, *path), "rb")
                     r = fd.read(piece_size - len(buf))
                     while r:
                         buf += r
