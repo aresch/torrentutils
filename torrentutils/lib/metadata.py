@@ -152,13 +152,13 @@ class TorrentMetadata(object):
             # Multi-file torrent
             self.__files = []
             for fd in md["info"]["files"]:
-                if fd["path"].startswith("_____padding_file_") or ("attr" in fd and "p" in fd["attr"]):
+                if "/".join(fd["path"]).startswith("_____padding_file_") or ("attr" in fd and "p" in fd["attr"]):
                     # This is a padding file, so lets not display it but set the
                     # pad_files property True
                     self.pad_files = True
                 else:
                     # Regular file, so add it to the list
-                    self.__files.append((fd["path"], fd["length"]))
+                    self.__files.append(("/".join(fd["path"]), fd["length"]))
 
         self.__info_hash = sha(bencode(md["info"])).hexdigest()
 
