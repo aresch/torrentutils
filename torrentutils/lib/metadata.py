@@ -370,7 +370,7 @@ class TorrentMetadata(object):
 
     def get_piece_size(self):
         """
-        The size of pieces in bytes.  The size must be a multiple of 16KiB.
+        The size of pieces in KiBs.  The size must be a multiple of 16.
         If you don't set a piece size, one will be automatically selected to
         produce a torrent with less than 1024 pieces or the smallest possible
         with a 8192KiB piece size.
@@ -473,7 +473,7 @@ class TorrentMetadata(object):
     def get_name(self):
         """
         In a single file torrent, this is the name of the file and in a multi-file
-        torrent, this is the name of the directory.
+        torrent, it is the name of the directory.
         """
         return self.__name
 

@@ -73,6 +73,10 @@ def torrent_make():
         )
     )
     parser.add_option(
+        "-n", "--name", dest="name", action="store", type="string",
+        help=pretty_docstring(metadata.TorrentMetadata.name.__doc__)
+    )
+    parser.add_option(
         "-q", "--quiet", dest="quiet", action="store_true", default=False,
         help="Do not print out progress or any status."
     )
