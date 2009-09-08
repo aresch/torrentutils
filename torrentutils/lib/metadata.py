@@ -234,9 +234,9 @@ class TorrentMetadata(object):
             for index, (path, size) in enumerate(self.__files):
                 head, tail = os.path.split(self.data_path)
                 if tail:
-                    p = path.replace(tail, "")
+                    p = path.replace(tail, "", 1)
                 else:
-                    p = path.replace(head, "")
+                    p = path.replace(head, "", 1)
 
                 p = p.lstrip("/")
                 p = p.split("/")
