@@ -135,6 +135,42 @@ def torrent_view():
 
     # Setup the argument parser
     parser = OptionParser(usage=usage, version="%prog (torrentutils) " + version)
+    parser.add_option(
+        "-s", "--piece-size", dest="piece_size", action="store_true", default=False,
+        help="Display the piece size."
+    )
+    parser.add_option(
+        "-p", "--pad-files", dest="pad_files", action="store_true", default=False,
+        help="Display if pad files are used."
+    )
+    parser.add_option(
+        "-c", "--comment", dest="comment", action="store_true", default=False,
+        help="Display comment."
+    )
+    parser.add_option(
+        "-P", "--private", dest="private", action="store_true", default=False,
+        help="Display the private flag."
+    )
+    parser.add_option(
+        "-t", "--trackers", dest="trackers", action="store_true", default=False,
+        help="Display the trackers."
+    )
+    parser.add_option(
+        "-w", "--webseeds", dest="webseeds", action="store_true", default=False,
+        help="Display the webseeds."
+    )
+    parser.add_option(
+        "-n", "--name", dest="name", action="store_true", default=False,
+        help="Display the torrent name."
+    )
+    parser.add_option(
+        "-i", "--info-hash", dest="info_hash", action="store_true", default=False,
+        help="Display the info-hash."
+    )
+    parser.add_option(
+        "-f", "--files", dest="files", action="store_true", default=False,
+        help="Display list of files."
+    )
 
      # Get the options and args from the OptionParser
     (options, args) = parser.parse_args()
@@ -143,31 +179,46 @@ def torrent_view():
         parser.print_help()
         sys.exit(0)
 
+    options = options.__dict__
+
+    preferred_order = [
+        "name",
+        "info_hash",
+        "piece_size",
+        "comment",
+        "private",
+        "pad_files",
+        "trackers",
+        "webseeds",
+        "files"
+    ]
+
+    if not any(options.values()):
+        for key in options:
+            options[key] = True
+
     for arg in args:
         md = metadata.TorrentMetadata()
         md.load(arg)
-        print("Name: %s" % md.name)
-        print("Info-hash: %s" % md.info_hash)
-        print("Piece Size: %s" % fsize(md.piece_size))
-        if md.comment:
-            print("Comment: %s" % md.comment)
-        print("Private: %s" % md.private)
-        print("Pad Files: %s" % md.pad_files)
-        if md.trackers:
-            print("Trackers:")
-            for index, tier in enumerate(md.trackers):
-                print("  Tier %s:" % index)
-                for tracker in tier:
-                    print("    %s" % tracker)
 
-        if md.webseeds:
-            print("Webseeds:")
-            for webseed in md.webseeds:
-                print("  %s" % webseed)
-
-        print("Files:")
-        for filename, size in md.files:
-            print("  %s | %s" % (fsize(size), filename))
+        for option in preferred_order:
+            if options[option] and hasattr(md, option):
+                if option == "trackers":
+                    print("Trackers:")
+                    for index, tier in enumerate(md.trackers):
+                        print("  Tier %s:" % index)
+                        for tracker in tier:
+                            print("    %s" % tracker)
+                elif option == "webseeds":
+                    print("Webseeds:")
+                    for webseed in md.webseeds:
+                        print("  %s" % webseed)
+                elif option == "files":
+                    print("Files:")
+                    for filename, size in md.files:
+                        print("  %s | %s" % (fsize(size), filename))
+                else:
+                    print("%s: %s" % (option.capitalize(), getattr(md, option)))
 
 def torrent_edit():
     pass
