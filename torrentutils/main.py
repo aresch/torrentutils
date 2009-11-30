@@ -41,6 +41,30 @@ def pretty_docstring(s):
         s = s.replace("  ", " ")
     return s
 
+def fsize(fsize_b):
+    """
+    Formats the bytes value into a string with KiB, MiB or GiB units
+
+    :param fsize_b: the filesize in bytes
+    :type fsize_b: int
+    :returns: formatted string in KiB, MiB or GiB units
+    :rtype: string
+
+    **Usage**
+
+    >>> fsize(112245)
+    '109.6 KiB'
+
+    """
+    fsize_kb = fsize_b / 1024.0
+    if fsize_kb < 1024:
+        return "%.1f KiB" % fsize_kb
+    fsize_mb = fsize_kb / 1024.0
+    if fsize_mb < 1024:
+        return "%.1f MiB" % fsize_mb
+    fsize_gb = fsize_mb / 1024.0
+    return "%.1f GiB" % fsize_gb
+
 def torrent_make():
     usage = "%prog [options] source target"
 
@@ -122,16 +146,28 @@ def torrent_view():
     for arg in args:
         md = metadata.TorrentMetadata()
         md.load(arg)
-        print("comment: %s" % md.comment)
-        print("private: %s" % md.private)
-        print("pad_files: %s" % md.pad_files)
-        print("trackers: %s" % md.trackers)
-        print("webseeds: %s" % md.webseeds)
-        print("peice_size: %s" % md.piece_size)
-        print("info-hash: %s" % md.info_hash)
-        print("name: %s" % md.name)
-        print("files: %s" % md.files)
+        print("Name: %s" % md.name)
+        print("Info-hash: %s" % md.info_hash)
+        print("Piece Size: %s" % fsize(md.piece_size))
+        if md.comment:
+            print("Comment: %s" % md.comment)
+        print("Private: %s" % md.private)
+        print("Pad Files: %s" % md.pad_files)
+        if md.trackers:
+            print("Trackers:")
+            for index, tier in enumerate(md.trackers):
+                print("  Tier %s:" % index)
+                for tracker in tier:
+                    print("    %s" % tracker)
 
+        if md.webseeds:
+            print("Webseeds:")
+            for webseed in md.webseeds:
+                print("  %s" % webseed)
+
+        print("Files:")
+        for filename, size in md.files:
+            print("  %s | %s" % (fsize(size), filename))
 
 def torrent_edit():
     pass
