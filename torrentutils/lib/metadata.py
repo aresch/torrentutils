@@ -211,7 +211,7 @@ class TorrentMetadata(object):
         datasize = sum([x[1] for x in self.__files])
 
         if self.piece_size:
-            piece_size = piece_size * 1024
+            piece_size = self.piece_size * 1024
         else:
             # We need to calculate a piece size
             piece_size = 16384
