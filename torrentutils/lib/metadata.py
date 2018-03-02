@@ -24,7 +24,7 @@ import sys
 import os
 from hashlib import sha1 as sha
 
-from bencode import bencode, bdecode
+from .bencode import bencode, bdecode
 
 def get_path_size(path):
     """
@@ -117,7 +117,7 @@ class TorrentMetadata(object):
 
         try:
             md = bdecode(open(filename, "rb").read())
-        except Exception, e:
+        except Exception as e:
             raise InvalidBencoding("The file %s contains invalid data." % filename)
 
         # Set the properties

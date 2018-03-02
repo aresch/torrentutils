@@ -20,9 +20,6 @@
 # 	Boston, MA    02110-1301, USA.
 #
 
-import ez_setup
-ez_setup.use_setuptools()
-
 from setuptools import setup
 
 setup(
@@ -41,6 +38,6 @@ setup(
     license="GPLv3",
     name="torrentutils",
     packages=["torrentutils", "torrentutils.lib"],
-    url="http://code.google.com/p/torrentutils",
+    url="https://github.com/aresch/torrentutils",
     version="1.0"
 )
